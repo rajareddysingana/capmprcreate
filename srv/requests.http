@@ -1,0 +1,26 @@
+#
+## Create PR to Ariba
+#
+POST http://localhost:4004/service/icecream/createPurchaseRequisition
+# Authorization:Basic SW50X3VzZXIxOkt5eXRlVGVzdDEyMw==
+content-type:application/json
+
+{
+    "RequisitionPayload":{
+        "CompanyCode" : 3000,
+        "DeliverTo"   :  "Murali",    
+        "Items" :[
+            {
+                "NumberInCollection" : 1,
+                "Quantity"           : 1,
+                "ShipTo"             : 3000,
+                "BillingAddress"     : 3000,
+                "CommodityCode"      : 12,
+                "Description"        : "Desktop",
+                "Price"              : 2000,
+                "Currency"           : "USD",
+                "UnitOfMeasure"      : "EA"
+            }
+        ]  
+    }
+}

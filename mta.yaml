@@ -1,0 +1,52 @@
+_schema-version: '3.1'
+ID: LearningIceCream
+version: 1.0.0
+description: "A simple CAP project."
+parameters:
+  enable-parallel-deployments: true
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        - npm install --production
+        - npx -p @sap/cds-dk cds build --production
+        - npx rimraf gen/db/src/gen/data
+modules:
+  - name: LearningIceCream-srv
+    type: nodejs
+    path: gen/srv
+    parameters:
+      buildpack: nodejs_buildpack
+    build-parameters:
+      builder: npm-ci
+    provides:
+      - name: srv-api # required by consumers of CAP services (e.g. approuter)
+        properties:
+          srv-url: ${default-url}
+    requires:
+      - name: LearningIceCream-db
+      - name: LearningIceCream-auth
+
+  - name: LearningIceCream-db-deployer
+    type: hdb
+    path: gen/db
+    parameters:
+      buildpack: nodejs_buildpack
+    requires:
+      - name: LearningIceCream-db
+
+resources:
+  - name: LearningIceCream-db
+    type: com.sap.xs.hdi-container
+    parameters:
+      service: hana
+      service-plan: hdi-shared
+  - name: LearningIceCream-auth
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-plan: application
+      path: ./xs-security.json
+      config:
+        xsappname: LearningIceCream-${org}-${space}
+        tenant-mode: dedicated
