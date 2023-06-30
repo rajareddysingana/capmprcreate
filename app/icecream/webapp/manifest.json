@@ -29,7 +29,7 @@
 				"settings": {
 					"annotations": [],
 					"localUri": "localService/metadata.xml",
-					"odataVersion": "4.0"
+					"odataVersion": "2.0"
 				}
 			}
 		}
@@ -112,6 +112,9 @@
 			"reviews": {
 				"type": "sap.ui.model.json.JSONModel",
 				"uri": "model/data/Reviews.json"
+			},
+			"PurchaseRequisition": {
+				"type": "sap.ui.model.json.JSONModel"
 			}
 		},
 		"routing": {
@@ -148,6 +151,11 @@
 					"pattern": "reviews",
 					"name": "reviews",
 					"target": "reviews"
+				},
+				{
+					"pattern": "createpr",
+					"name": "createpr",
+					"target": "createpr"
 				}
 			],
 			"targets": {
@@ -165,6 +173,10 @@
 				},
 				"reviews": {
 					"viewName": "Reviews",
+					"viewLevel": 1
+				},
+				"createpr":{
+					"viewName": "CreatePR",
 					"viewLevel": 1
 				}
 			}

@@ -40,12 +40,16 @@ sap.ui.define([
 		 * @param {sap.ui.base.Event} event The SAPUI5 event object
 		 */
 		onTilePressed: function(event) {
-			var sItemTitle, sMessage;
-			sItemTitle = event.getSource().getHeader() || event.getSource().getSubheader();
-			sMessage = sItemTitle && sItemTitle.length && sItemTitle.length > 0 ?
-				this.getResourceBundle().getText("startpageTileClickedMessageTemplate", [sItemTitle]) :
-				this.getResourceBundle().getText("startpageTileClickedMessage");
-			MessageToast.show(sMessage);
+			// var sItemTitle, sMessage;
+			// sItemTitle = event.getSource().getHeader() || event.getSource().getSubheader();
+			// sMessage = sItemTitle && sItemTitle.length && sItemTitle.length > 0 ?
+			// 	this.getResourceBundle().getText("startpageTileClickedMessageTemplate", [sItemTitle]) :
+			// 	this.getResourceBundle().getText("startpageTileClickedMessage");
+			// MessageToast.show(sMessage);
+
+			if (event.getSource().getState() === MobileLibrary.LoadState.Loaded) {
+				this.getRouter().navTo("createpr");
+			}
 		},
 
 		getRouter: function() {

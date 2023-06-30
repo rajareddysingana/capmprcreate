@@ -128,7 +128,7 @@ async function doImportReqToAriba(req) {
          forwardAuthToken: true
        };
  
-       registerDestination(destination, options);*/
+       registerDestination(destination, options);
 
     let oDestination = await registerDestination.getDestination({ destinationName: "PRCreate" });
 
@@ -137,7 +137,7 @@ async function doImportReqToAriba(req) {
         throw Error("Destination does not exist or is incorrectly configured");
     }
 
-    let oRequestConfig = await registerDestination.executeHttpRequest({ destinationName: oDestination });
+    let oRequestConfig = await registerDestination.executeHttpRequest({ destinationName: oDestination });*/
     //  oRequestConfig.method = "post";
     //  oRequestConfig.headers["Accept"] = oRequestConfig.headers["Content-Type"] = "application/xml";
 
@@ -192,7 +192,7 @@ async function doImportReqToAriba(req) {
     // axios.post(url[, data[, config]])
     // const sUrl='https://s1.ariba.com/Buyer/soap/KYYTEDSAPP-1-T/RequisitionImportAsyncPull';
 
-    const oResponse = await axios.post(`/Buyer/soap/KYYTEDSAPP-1-T/RequisitionImportAsyncPull`, xmlBodyStr, {
+    /*const oResponse = await axios.post(`/Buyer/soap/KYYTEDSAPP-1-T/RequisitionImportAsyncPull`, xmlBodyStr, {
         baseURL: oRequestConfig,
         headers: {
             'Content-Type': 'application/xml'
@@ -200,9 +200,9 @@ async function doImportReqToAriba(req) {
             username: 'Int_user1',
             password: 'KyyteTest123'
         }
-    });
+    });*/
 
-    /*const oResponse = await axios({
+    const oResponse = await axios({
         method: "post",
         url: "/Buyer/soap/KYYTEDSAPP-1-T/RequisitionImportAsyncPull",
         baseUrl: "https://s1.ariba.com",
@@ -214,7 +214,7 @@ async function doImportReqToAriba(req) {
             username: 'Int_user1',
             password: 'KyyteTest123'
         }
-    })*/
+    })
 
     if (oResponse.length) {
         return "Success";
@@ -222,6 +222,3 @@ async function doImportReqToAriba(req) {
 
 }
 
-module.exports = {
-    doImportReqToAriba
-};

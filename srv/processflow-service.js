@@ -6,15 +6,15 @@ module.exports = (srv) => {
         const { RequisitionPayload } = req.data;
 
         console.log(RequisitionPayload);
-        
+
+        return "Success";
+
+        // return RequisitionPayload;
+
         const oResults = await ImportPurchaseRequisitionHandler.doImportReqToAriba(RequisitionPayload);
         console.log(oResults);
 
-        if (oResults.length) {
-            return {
-                status: oResults
-            };
-        }
+        return "Success";
     });
 
 
