@@ -1,6 +1,8 @@
 "use strict";
 
-const logger = cds.log('logger');
+const cds = require("@sap/cds"),
+    logger = cds.log('logger');
+
 // const cloudSDK = require("@sap-cloud-sdk/core");
 const registerDestination = require('@sap-cloud-sdk/connectivity');
 const { default: axios } = require("axios");
@@ -9,33 +11,33 @@ const { default: axios } = require("axios");
 function _getLineItemPayload(aLineItems) {
     var sXML = '';
     aLineItems && aLineItems.forEach((oLineItem) => {
-        sXML = sXML + `
+        sXML = `${sXML}
         <urn:item>
-        <urn:NumberInCollection>1</urn:NumberInCollection>
-        <urn:Quantity>1</urn:Quantity>
+        <urn:NumberInCollection>${oLineItem.NumberInCollection}</urn:NumberInCollection>
+        <urn:Quantity>${oLineItem.Quantity}</urn:Quantity>
         <urn:ShipTo>
-            <urn:UniqueName>3000</urn:UniqueName>
+            <urn:UniqueName>${oLineItem.ShipTo}</urn:UniqueName>
         </urn:ShipTo>
         <urn:BillingAddress>
-            <urn:UniqueName>3000</urn:UniqueName>
+            <urn:UniqueName>${oLineItem.BillingAddress}</urn:UniqueName>
         </urn:BillingAddress>
         <urn:CommodityCode>
-            <urn:UniqueName>012</urn:UniqueName>
+            <urn:UniqueName>${oLineItem.CommodityCode}</urn:UniqueName>
         </urn:CommodityCode>
         <urn:Description>
             <urn:Price>
                 <urn:Currency>
-                    <urn:UniqueName>USD</urn:UniqueName>
+                    <urn:UniqueName>${oLineItem.Currency}</urn:UniqueName>
                 </urn:Currency>
-                <urn:Amount>2000.0</urn:Amount>
+                <urn:Amount>${oLineItem.Price}</urn:Amount>
             </urn:Price>
             <urn:CommonCommodityCode>
                 <urn:Domain>unspsc</urn:Domain>
                 <urn:UniqueName>43211507</urn:UniqueName>
             </urn:CommonCommodityCode>
-            <urn:Description>Desktop</urn:Description>
+            <urn:Description>${oLineItem.Description}</urn:Description>
             <urn:UnitOfMeasure>
-                <urn:UniqueName>EA</urn:UniqueName>
+                <urn:UniqueName>${oLineItem.UnitOfMeasure}</urn:UniqueName>
             </urn:UnitOfMeasure>
         </urn:Description>
         <urn:ImportedItemCategoryStaging>
@@ -45,13 +47,13 @@ function _getLineItemPayload(aLineItems) {
             <urn:ExpectedAmount>
                 <urn:Amount>200.00</urn:Amount>
                 <urn:Currency>
-                    <urn:UniqueName>USD</urn:UniqueName>
+                    <urn:UniqueName>${oLineItem.Currency}</urn:UniqueName>
                 </urn:Currency>
             </urn:ExpectedAmount>
             <urn:MaxAmount>
                 <urn:Amount>200.00</urn:Amount>
                 <urn:Currency>
-                    <urn:UniqueName>USD</urn:UniqueName>
+                    <urn:UniqueName>${oLineItem.Currency}</urn:UniqueName>
                 </urn:Currency>
             </urn:MaxAmount>
             <urn:ServiceEndDate>2024-06-30T00:00:00</urn:ServiceEndDate>
@@ -65,7 +67,7 @@ function _getLineItemPayload(aLineItems) {
         <urn:ImportedAccountingsStaging>
             <urn:SplitAccountings>
                 <urn:item>
-                    <urn:Quantity>1</urn:Quantity>
+                    <urn:Quantity>${oLineItem.Quantity}</urn:Quantity>
                     <urn:CostCenter>
                         <urn:CompanyCode>
                             <urn:UniqueName>3000</urn:UniqueName>
@@ -88,7 +90,7 @@ function _getLineItemPayload(aLineItems) {
                         <urn:UniqueName/>
                         <urn:SubNumber/>
                     </urn:Asset>
-                    <urn:NumberInCollection>1</urn:NumberInCollection>
+                    <urn:NumberInCollection>${oLineItem.NumberInCollection}</urn:NumberInCollection>
                     <urn:Percentage>100</urn:Percentage>
                     <urn:ProcurementUnit>
                         <urn:UniqueName/>
@@ -138,11 +140,14 @@ async function doImportReqToAriba(req) {
     }
 
     let oRequestConfig = await registerDestination.executeHttpRequest({ destinationName: oDestination });*/
+
     //  oRequestConfig.method = "post";
     //  oRequestConfig.headers["Accept"] = oRequestConfig.headers["Content-Type"] = "application/xml";
 
     // process the price and supplier changes
     var sLineItemsXML = _getLineItemPayload(req.Items);
+
+    console.log(sLineItemsXML);
 
     const sXmlBodyStr = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:Ariba:Buyer:vrealm_2421">
     <soapenv:Header>
@@ -156,10 +161,10 @@ async function doImportReqToAriba(req) {
             <urn:Requisition_RequisitionImportPull_Item>
                 <urn:item>
                     <urn:CompanyCode>
-                        <urn:UniqueName>3000</urn:UniqueName>
+                        <urn:UniqueName>${req.CompanyCode}</urn:UniqueName>
                     </urn:CompanyCode>
                     <urn:DefaultLineItem>
-                        <urn:DeliverTo>Murali</urn:DeliverTo>
+                        <urn:DeliverTo>${req.DeliverTo}</urn:DeliverTo>
                         <urn:NeedBy>2024-09-04T00:00:00</urn:NeedBy>
                     </urn:DefaultLineItem>
                     <urn:ImportedHeaderCommentStaging>false</urn:ImportedHeaderCommentStaging>
@@ -202,11 +207,12 @@ async function doImportReqToAriba(req) {
         }
     });*/
 
+    console.log(sXmlBodyStr);
+
     const oResponse = await axios({
         method: "post",
-        url: "/Buyer/soap/KYYTEDSAPP-1-T/RequisitionImportAsyncPull",
-        baseUrl: "https://s1.ariba.com",
-        data: xmlBodyStr,
+        url: "https://s1.ariba.com/Buyer/soap/KYYTEDSAPP-1-T/RequisitionImportAsyncPull",
+        data: sXmlBodyStr,
         headers: {
             "content-type": "application/xml"
         },
@@ -216,9 +222,11 @@ async function doImportReqToAriba(req) {
         }
     })
 
-    if (oResponse.length) {
-        return "Success";
-    }
+    return oResponse;
 
+}
+
+module.exports = {
+    doImportReqToAriba
 }
 

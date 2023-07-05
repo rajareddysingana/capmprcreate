@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+    <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/Common.xml">
+        <edmx:Include Alias="Common" Namespace="com.sap.vocabularies.Common.v1"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Core.V1.xml">
+        <edmx:Include Alias="Core" Namespace="Org.OData.Core.V1"/>
+    </edmx:Reference>
+    <edmx:DataServices>
+        <Schema Namespace="ProcessFlowService" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+            <EntityContainer Name="EntityContainer">
+                <EntitySet Name="ProcessFlows" EntityType="ProcessFlowService.ProcessFlows">
+                    <NavigationPropertyBinding Path="texts" Target="ProcessFlows_texts"/>
+                    <NavigationPropertyBinding Path="localized" Target="ProcessFlows_texts"/>
+                </EntitySet>
+                <EntitySet Name="ProcessFlows_texts" EntityType="ProcessFlowService.ProcessFlows_texts"/>
+                <ActionImport Name="createPurchaseRequisition" Action="ProcessFlowService.createPurchaseRequisition"/>
+            </EntityContainer>
+            <EntityType Name="ProcessFlows">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="ID" Type="Edm.Int32" Nullable="false"/>
+                <Property Name="Lane" Type="Edm.Int32"/>
+                <Property Name="Title" Type="Edm.String"/>
+                <Property Name="TitleAbbreviation" Type="Edm.String" MaxLength="3"/>
+                <Property Name="State" Type="Edm.String"/>
+                <Property Name="StateText" Type="Edm.String"/>
+                <Property Name="Focused" Type="Edm.Boolean"/>
+                <NavigationProperty Name="texts" Type="Collection(ProcessFlowService.ProcessFlows_texts)">
+                    <OnDelete Action="Cascade"/>
+                </NavigationProperty>
+                <NavigationProperty Name="localized" Type="ProcessFlowService.ProcessFlows_texts">
+                    <ReferentialConstraint Property="ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+            </EntityType>
+            <EntityType Name="ProcessFlows_texts">
+                <Key>
+                    <PropertyRef Name="locale"/>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="locale" Type="Edm.String" MaxLength="14" Nullable="false"/>
+                <Property Name="ID" Type="Edm.Int32" Nullable="false"/>
+                <Property Name="Title" Type="Edm.String"/>
+            </EntityType>
+            <ComplexType Name="PurchaseRequisitionHeader">
+                <Property Name="CompanyCode" Type="Edm.Int32"/>
+                <Property Name="DeliverTo" Type="Edm.String"/>
+                <Property Name="Items" Type="Collection(ProcessFlowService.PurchaseRequisitionItems)" Nullable="false"/>
+            </ComplexType>
+            <ComplexType Name="PurchaseRequisitionItems">
+                <Property Name="NumberInCollection" Type="Edm.Int32"/>
+                <Property Name="Quantity" Type="Edm.Int32"/>
+                <Property Name="ShipTo" Type="Edm.Int32"/>
+                <Property Name="BillingAddress" Type="Edm.Int32"/>
+                <Property Name="CommodityCode" Type="Edm.Int32"/>
+                <Property Name="Description" Type="Edm.String"/>
+                <Property Name="Price" Type="Edm.Int32"/>
+                <Property Name="Currency" Type="Edm.String" MaxLength="3"/>
+                <Property Name="UnitOfMeasure" Type="Edm.String" MaxLength="2"/>
+            </ComplexType>
+            <ComplexType Name="Response">
+                <Property Name="status" Type="Edm.Int32"/>
+                <Property Name="statusText" Type="Edm.String"/>
+                <Property Name="data" Type="Edm.String"/>
+            </ComplexType>
+            <Action Name="createPurchaseRequisition" IsBound="false">
+                <Parameter Name="RequisitionPayload" Type="ProcessFlowService.PurchaseRequisitionHeader"/>
+                <ReturnType Type="ProcessFlowService.Response"/>
+            </Action>
+            <Annotations Target="ProcessFlowService.ProcessFlows_texts/locale">
+                <Annotation Term="Common.Label" String="{i18n>LanguageCode}"/>
+                </Annotations>
+            </Schema>
+        </edmx:DataServices>
+    </edmx:Edmx>

@@ -7,15 +7,17 @@
   "private": true,
   "dependencies": {
     "@sap-cloud-sdk/connectivity": "^3.2.0",
+    "@sap-cloud-sdk/http-client": "^3.2.0",
     "@sap/cds": "^6",
-    "express": "^4",
-    "sap-cf-axios": "^0.4.10",
-    "hdb": "^0.19.0",
+    "@sap/cds-odata-v2-adapter-proxy": "^1.9.21",
     "@sap/xssec": "^3",
-    "passport": "^0"
+    "express": "^4",
+    "hdb": "^0.19.0",
+    "passport": "^0",
+    "sap-cf-axios": "^0.4.10"
   },
   "devDependencies": {
-    "@sap/ux-specification": "^1.108.7",
+    "@sap/ux-specification": "^1.108.8",
     "sqlite3": "^5"
   },
   "engines": {
@@ -23,7 +25,7 @@
   },
   "scripts": {
     "start": "cds-serve",
-    "watch-icecream": "cds watch --open icecream/webapp/index.html?sap-ui-xx-viewCache=false"
+    "watch-createpr": "cds watch --open createpr/webapp/index.html?sap-ui-xx-viewCache=false"
   },
   "cds": {
     "requires": {
@@ -38,10 +40,18 @@
           "kind": "hana-cloud"
         },
         "auth": "xsuaa"
+      },
+      "s1ariba": {
+        "kind": "basic",
+        "credentials": {
+          "url": "https://s1.ariba.com",
+          "user": "Int_user1",
+          "password": "KyyteTest123"
+        }
       }
     }
   },
   "sapux": [
-    "app/icecream"
+    "app/createpr"
   ]
 }

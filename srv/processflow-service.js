@@ -1,20 +1,19 @@
-const ImportPurchaseRequisitionHandler = require('./handler/purchaserequisition');
+const ImportPurchaseRequisitionHandler = require('./handler/purchaserequisition'),
+    cds = require('@sap/cds');
 
 module.exports = (srv) => {
 
     srv.on('createPurchaseRequisition', async req => {
         const { RequisitionPayload } = req.data;
 
-        console.log(RequisitionPayload);
-
-        return "Success";
-
-        // return RequisitionPayload;
-
         const oResults = await ImportPurchaseRequisitionHandler.doImportReqToAriba(RequisitionPayload);
         console.log(oResults);
 
-        return "Success";
+        return {
+            status:oResults.status,
+            statusText:oResults.status === 200 ? "Success":"Error",
+            data:oResults.data
+        };
     });
 
 

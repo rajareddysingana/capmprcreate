@@ -26,6 +26,12 @@ service ProcessFlowService {
     };
 
 
-    action createPurchaseRequisition(RequisitionPayload : PurchaseRequisitionHeader) returns String;
+    type Response : {
+        status     : Integer;
+        statusText : String;
+        data       : String;
+    }
+
+    action createPurchaseRequisition(RequisitionPayload : PurchaseRequisitionHeader) returns Response;
 
 }
