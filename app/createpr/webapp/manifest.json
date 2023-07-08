@@ -21,8 +21,16 @@
         "type": "OData",
         "settings": {
           "annotations": [],
-          "localUri": "localService/metadata.xml",
           "odataVersion": "2.0"
+        }
+      },
+      "icecreamv4": {
+        "uri": "/service/icecream",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "localUri": "localService/metadata.xml",
+          "odataVersion": "4.0"
         }
       }
     }
