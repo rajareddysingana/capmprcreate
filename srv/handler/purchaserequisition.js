@@ -1,17 +1,117 @@
 "use strict";
 
 const cds = require("@sap/cds"),
-    logger = cds.log('logger');
+  logger = cds.log("logger");
 
 // const cloudSDK = require("@sap-cloud-sdk/core");
-const registerDestination = require('@sap-cloud-sdk/connectivity');
+const registerDestination = require("@sap-cloud-sdk/connectivity");
 const { default: axios } = require("axios");
 
+function _getLineItemPayload(aLineItems, oHeader) {
+  var sXML = "";
+  aLineItems &&
+    aLineItems.forEach((oLineItem) => {
+      sXML = `${sXML}
+        <urn:item>
+        <urn:BillingAddress>
+            <urn:UniqueName>${oLineItem.BillingAddress}</urn:UniqueName>
+        </urn:BillingAddress>
+        <urn:CommodityCode>
+            <urn:UniqueName>${oLineItem.CommodityCode}</urn:UniqueName>
+        </urn:CommodityCode>
+        <urn:Description>
+            <urn:CommonCommodityCode>
+                <urn:Domain>unspsc</urn:Domain>
+                <urn:UniqueName>43211507</urn:UniqueName>
+            </urn:CommonCommodityCode>
+            <urn:Description>${oLineItem.Description}</urn:Description>
+            <urn:Price>
+                <urn:Amount>${oLineItem.Price}</urn:Amount>
+                <urn:Currency>
+                    <urn:UniqueName>${oLineItem.Currency}</urn:UniqueName>
+                </urn:Currency>
+            </urn:Price>
+            <urn:UnitOfMeasure>
+                <urn:UniqueName>${oLineItem.UnitOfMeasure}</urn:UniqueName>
+            </urn:UnitOfMeasure>
+        </urn:Description>
+        <urn:ImportedAccountCategoryStaging>
+            <urn:UniqueName>K</urn:UniqueName>
+        </urn:ImportedAccountCategoryStaging>
+        <urn:ImportedAccountingsStaging>
+            <urn:SplitAccountings>
+                <urn:item>
+                    <urn:Account>
+                        <urn:UniqueName/>
+                    </urn:Account>
+                    <urn:Asset>
+                        <urn:CompanyCode>
+                            <urn:UniqueName/>
+                        </urn:CompanyCode>
+                        <urn:SubNumber/>
+                        <urn:UniqueName/>
+                    </urn:Asset>
+                    <urn:CostCenter>
+                        <urn:CompanyCode>
+                            <urn:UniqueName>${oHeader.CompanyCode}</urn:UniqueName>
+                        </urn:CompanyCode>
+                        <urn:UniqueName>0000009154</urn:UniqueName>
+                    </urn:CostCenter>
+                    <urn:GeneralLedger>
+                        <urn:CompanyCode>
+                            <urn:UniqueName>${oHeader.CompanyCode}</urn:UniqueName>
+                        </urn:CompanyCode>
+                        <urn:UniqueName>0000400200</urn:UniqueName>
+                    </urn:GeneralLedger>
+                    <urn:InternalOrder>
+                        <urn:UniqueName/>
+                    </urn:InternalOrder>
+                    <urn:NumberInCollection>${oLineItem.NumberInCollection}</urn:NumberInCollection>
+                    <urn:Percentage>100</urn:Percentage>
+                    <urn:ProcurementUnit>
+                        <urn:UniqueName/>
+                    </urn:ProcurementUnit>
+                    <urn:Quantity>${oLineItem.Quantity}</urn:Quantity>
+                    <urn:WBSElement>
+                        <urn:UniqueName/>
+                    </urn:WBSElement>
+                </urn:item>
+            </urn:SplitAccountings>
+            <urn:Type>
+                <urn:UniqueName>_Percentage</urn:UniqueName>
+            </urn:Type>
+        </urn:ImportedAccountingsStaging>
+        <urn:ImportedDeliverToStaging>3000</urn:ImportedDeliverToStaging>
+        <urn:ImportedNeedByStaging>2023-07-04T00:00:00</urn:ImportedNeedByStaging>
+        <urn:ItemCategory>
+            <urn:UniqueName>M</urn:UniqueName>
+        </urn:ItemCategory>
+        <urn:NumberInCollection>${oLineItem.NumberInCollection}</urn:NumberInCollection>
+        <urn:OriginatingSystemLineNumber>00001</urn:OriginatingSystemLineNumber>
+        <urn:PurchaseGroup>
+            <urn:UniqueName>100</urn:UniqueName>
+        </urn:PurchaseGroup>
+        <urn:PurchaseOrg>
+            <urn:UniqueName>3000</urn:UniqueName>
+        </urn:PurchaseOrg>
+        <urn:Quantity>${oLineItem.Quantity}</urn:Quantity>
+        <urn:ShipTo>
+            <urn:UniqueName>${oLineItem.ShipTo}</urn:UniqueName>
+        </urn:ShipTo>
+        <urn:Supplier>
+            <urn:UniqueName>1000003550</urn:UniqueName>
+        </urn:Supplier>
+        </urn:item>`;
+    });
 
-function _getLineItemPayload(aLineItems) {
-    var sXML = '';
-    aLineItems && aLineItems.forEach((oLineItem) => {
-        sXML = `${sXML}
+  return sXML;
+}
+
+function _getLineItemPayloadAsync(aLineItems) {
+  var sXML = "";
+  aLineItems &&
+    aLineItems.forEach((oLineItem) => {
+      sXML = `${sXML}
         <urn:item>
         <urn:NumberInCollection>${oLineItem.NumberInCollection}</urn:NumberInCollection>
         <urn:Quantity>${oLineItem.Quantity}</urn:Quantity>
@@ -119,12 +219,12 @@ function _getLineItemPayload(aLineItems) {
     </urn:item>`;
     });
 
-    return sXML;
+  return sXML;
 }
 
-async function doImportReqToAriba(req) {
-    // Add Local Destination for Testing
-    /* const destination = {
+async function doImportReqToAribaAsync(req) {
+  // Add Local Destination for Testing
+  /* const destination = {
          name: 'PRCreate',
          url: 'https://s1.ariba.com/Buyer/soap/KYYTEDSAPP-1-T/RequisitionImportAsyncPull',
          forwardAuthToken: true
@@ -141,15 +241,15 @@ async function doImportReqToAriba(req) {
 
     let oRequestConfig = await registerDestination.executeHttpRequest({ destinationName: oDestination });*/
 
-    //  oRequestConfig.method = "post";
-    //  oRequestConfig.headers["Accept"] = oRequestConfig.headers["Content-Type"] = "application/xml";
+  //  oRequestConfig.method = "post";
+  //  oRequestConfig.headers["Accept"] = oRequestConfig.headers["Content-Type"] = "application/xml";
 
-    // process the price and supplier changes
-    var sLineItemsXML = _getLineItemPayload(req.Items);
+  // process the price and supplier changes
+  var sLineItemsXML = _getLineItemPayloadAsync(req.Items);
 
-    console.log(sLineItemsXML);
+  console.log(sLineItemsXML);
 
-    const sXmlBodyStr = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:Ariba:Buyer:vrealm_2421">
+  const sXmlBodyStr = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:Ariba:Buyer:vrealm_2421">
     <soapenv:Header>
         <urn:Headers>
             <urn:variant>vrealm_2421</urn:variant>
@@ -190,43 +290,116 @@ async function doImportReqToAriba(req) {
     </soapenv:Body>
 </soapenv:Envelope>`;
 
-    // oRequestConfig.data = xmlBodyStr;
-    // let oResponse = await axios.request(oRequestConfig);
+  // axios.post(url[, data[, config]])
+  const sUrl =
+    "https://s1.ariba.com/Buyer/soap/KYYTEDSAPP-1-T/RequisitionImportAsyncPull";
 
+  const oResponse = await axios.post(sUrl, sXmlBodyStr, {
+    headers: {
+      "Content-Type": "application/xml",
+    },
+    auth: {
+      username: "Int_user1",
+      password: "KyyteTest123",
+    },
+  });
 
-    // axios.post(url[, data[, config]])
-    // const sUrl='https://s1.ariba.com/Buyer/soap/KYYTEDSAPP-1-T/RequisitionImportAsyncPull';
+  console.log(sXmlBodyStr);
 
-    /*const oResponse = await axios.post(`/Buyer/soap/KYYTEDSAPP-1-T/RequisitionImportAsyncPull`, xmlBodyStr, {
-        baseURL: oRequestConfig,
-        headers: {
-            'Content-Type': 'application/xml'
-        }, auth: {
-            username: 'Int_user1',
-            password: 'KyyteTest123'
-        }
-    });*/
+  return oResponse;
+}
 
-    console.log(sXmlBodyStr);
+async function doImportReqToAriba(req) {
+  // process the price and supplier changes
+  const sLineItemsXML = _getLineItemPayload(req.Items, req),
+    sVariant = `vrealm_${generateRandomNumber(0, 10000)}`,
+    sPartition = `prealm_${generateRandomNumber(0, 10000)}`;
 
-    const oResponse = await axios({
-        method: "post",
-        url: "https://s1.ariba.com/Buyer/soap/KYYTEDSAPP-1-T/RequisitionImportAsyncPull",
-        data: sXmlBodyStr,
-        headers: {
-            "content-type": "application/xml"
-        },
-        auth: {
-            username: 'Int_user1',
-            password: 'KyyteTest123'
-        }
-    })
+  console.log(sLineItemsXML);
 
-    return oResponse;
+  const sXmlBodyStr = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:Ariba:Buyer:vrealm_2421">
+    <soapenv:Header>
+        <urn:Headers>
+            <urn:variant>${sVariant}</urn:variant>
+            <urn:partition>${sPartition}</urn:partition>
+        </urn:Headers>
+    </soapenv:Header>
+    <soapenv:Body>
+        <urn:RequisitionImportPullRequest partition="${sPartition}" variant="${sVariant}">
+            <urn:Requisition_RequisitionImportPull_Item>
+                <urn:item>
+                    <urn:CompanyCode>
+                        <urn:UniqueName>${req.CompanyCode}</urn:UniqueName>
+                    </urn:CompanyCode>
+                    <urn:DefaultLineItem>
+                        <urn:DeliverTo>${req.DeliverTo}</urn:DeliverTo>
+                        <urn:NeedBy>${new Date().toISOString()}</urn:NeedBy>
+                    </urn:DefaultLineItem>
+                    <urn:ImportedHeaderCommentStaging>false</urn:ImportedHeaderCommentStaging>
+                    <urn:ImportedHeaderExternalCommentStaging>false</urn:ImportedHeaderExternalCommentStaging>
+                    <urn:LineItems>
+                       ${sLineItemsXML}
+                    </urn:LineItems>
+                    <urn:Name>TEST PR from Webervice</urn:Name>
+                    <urn:OriginatingSystem>SOAP</urn:OriginatingSystem>
+                    <urn:OriginatingSystemReferenceID>${generateRandomString(
+                      7
+                    )}</urn:OriginatingSystemReferenceID>
+                    <urn:Preparer>
+                        <urn:PasswordAdapter>PasswordAdapter1</urn:PasswordAdapter>
+                        <urn:UniqueName>puser1</urn:UniqueName>
+                    </urn:Preparer>
+                    <urn:Requester>
+                        <urn:PasswordAdapter>PasswordAdapter1</urn:PasswordAdapter>
+                        <urn:UniqueName>puser1</urn:UniqueName>
+                    </urn:Requester>
+                    <urn:UniqueName>${generateRandomString(7)}</urn:UniqueName>
+                </urn:item>
+            </urn:Requisition_RequisitionImportPull_Item>
+        </urn:RequisitionImportPullRequest>
+    </soapenv:Body>
+</soapenv:Envelope>`;
 
+  const oResponse = await axios({
+    method: "post",
+    url: "https://s1.ariba.com/Buyer/soap/KYYTEDSAPP-1-T/RequisitionImportPull",
+    data: sXmlBodyStr,
+    headers: {
+      "content-type": "application/xml",
+    },
+    auth: {
+      username: "Int_user1",
+      password: "KyyteTest123",
+    },
+  });
+
+  return oResponse;
+}
+
+function generateRandomString(length) {
+  let result = "";
+
+  // declare all characters
+  const characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
+    charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+
+  return result;
+}
+
+function generateRandomNumber(minNumber, maxNumber) {
+  // input from the user
+  const min = parseInt(minNumber);
+  const max = parseInt(maxNumber);
+
+  // generating a random number
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 module.exports = {
-    doImportReqToAriba
-}
-
+  doImportReqToAriba,
+  doImportReqToAribaAsync,
+};

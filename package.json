@@ -14,14 +14,15 @@
     "express": "^4",
     "hdb": "^0.19.0",
     "passport": "^0",
-    "sap-cf-axios": "^0.4.10"
+    "sap-cf-axios": "^0.4.10",
+    "xml2js": "^0.6.0"
   },
   "devDependencies": {
     "@sap/ux-specification": "^1.108.8",
-    "sqlite3": "^5"
+    "sqlite3": "^5.1.6"
   },
   "engines": {
-    "node": "^16"
+    "node": "^18"
   },
   "scripts": {
     "start": "cds-serve",
@@ -30,9 +31,9 @@
   "cds": {
     "requires": {
       "db": {
-        "kind": "sql",
+        "kind": "sqlite",
         "credentials": {
-          "database": "db/com-kyyte-icecream.db"
+          "database": "db/com.kyyte.icecream.db"
         }
       },
       "[production]": {

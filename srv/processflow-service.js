@@ -1,25 +1,36 @@
-const ImportPurchaseRequisitionHandler = require('./handler/purchaserequisition'),
-    cds = require('@sap/cds');
+const ImportPurchaseRequisitionHandler = require("./handler/purchaserequisition"),
+  cds = require("@sap/cds"),
+  xml2js = require("xml2js");
 
 module.exports = (srv) => {
+  srv.on("createPurchaseRequisition", async (req) => {
+    const { RequisitionPayload } = req.data;
 
-    srv.on('createPurchaseRequisition', async req => {
-        const { RequisitionPayload } = req.data;
+    const oResults = await ImportPurchaseRequisitionHandler.doImportReqToAriba(
+      RequisitionPayload
+    );
+    console.log(oResults);
 
-        const oResults = await ImportPurchaseRequisitionHandler.doImportReqToAriba(RequisitionPayload);
-        console.log(oResults);
+    // Without parser
+    /*    xml2js
+      .parseStringPromise(oResults.data)
+      .then(function (result) {
+        console.dir(result);
+        console.log("Done");
+      })
+      .catch(function (err) {
+        // Failed
+      });*/
 
-        return {
-            status:oResults.status,
-            statusText:oResults.status === 200 ? "Success":"Error",
-            data:oResults.data
-        };
-    });
+    return {
+      status: oResults.status,
+      statusText: oResults.status === 200 ? "Success" : "Error",
+      data: oResults.data,
+    };
+  });
 
-
-
-    // Reply mock data for Process Flow Entity
-    /* srv.on('READ', 'ProcessFlows', () => [
+  // Reply mock data for Process Flow Entity
+  /* srv.on('READ', 'ProcessFlows', () => [
          {
              ID: 1,
              Lane: 0,
@@ -40,8 +51,7 @@ module.exports = (srv) => {
     
          }
      ])*/
-}
-
+};
 
 // const cds = require('@sap/cds'),
 //     ImportPurchaseRequisitionHandler = require('./handler/purchaserequisition');
