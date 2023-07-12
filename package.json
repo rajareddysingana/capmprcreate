@@ -41,14 +41,6 @@
           "kind": "hana-cloud"
         },
         "auth": "xsuaa"
-      },
-      "s1ariba": {
-        "kind": "basic",
-        "credentials": {
-          "url": "https://s1.ariba.com",
-          "user": "Int_user1",
-          "password": "KyyteTest123"
-        }
       }
     }
   },
