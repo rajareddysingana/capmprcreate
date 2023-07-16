@@ -1,5 +1,6 @@
+# --
 _schema-version: '3.1'
-ID: LearningIceCream
+ID: learningicecream
 version: 1.0.0
 description: "A simple CAP project."
 parameters:
@@ -9,10 +10,11 @@ build-parameters:
     - builder: custom
       commands:
         - npm install --production
-        - npx -p @sap/cds-dk cds build --production
+        # - npx -p @sap/cds-dk cds build --production
+        - npx cds build --production
         - npx rimraf gen/db/src/gen/data
 modules:
-  - name: LearningIceCream-srv
+  - name: learningicecream-srv
     type: nodejs
     path: gen/srv
     parameters:
@@ -23,30 +25,50 @@ modules:
       - name: srv-api # required by consumers of CAP services (e.g. approuter)
         properties:
           srv-url: ${default-url}
-    requires:
-      - name: LearningIceCream-db
-      - name: LearningIceCream-auth
+    requires: 
+    # Resources extracted from CAP configuration
+      - name: learningicecream-database
+      - name: learningicecream-auth
 
-  - name: LearningIceCream-db-deployer
-    type: hdb
+
+  - name: learningicecream-db-deployer
+    type: custom
     path: gen/db
     parameters:
-      buildpack: nodejs_buildpack
+      buildpacks: [https://github.com/cloudfoundry/apt-buildpack#v0.2.2, nodejs_buildpack]
+      no-route: true
+      no-start: true
+      disk-quota: 2GB
+      memory: 512MB
+      tasks:
+        - name: deploy_to_postgresql
+          command: chmod 755 deploy.sh && ./deploy.sh
+          disk-quota: 2GB
+          memory: 512MB
+    build-parameters:
+      ignore: ["node_modules/"]
     requires:
-      - name: LearningIceCream-db
+      - name: learningicecream-database
 
 resources:
-  - name: LearningIceCream-db
-    type: com.sap.xs.hdi-container
+  - name: learningicecream-database
+    type: org.cloudfoundry.managed-service
     parameters:
-      service: hana
-      service-plan: hdi-shared
-  - name: LearningIceCream-auth
+      path: ./pg-options.json
+      service: postgresql-db
+      service-plan: standard
+      skip-service-updates:
+        parameters: true
+      service-tags:
+        - plain
+
+  - name: learningicecream-auth
     type: org.cloudfoundry.managed-service
     parameters:
       service: xsuaa
       service-plan: application
       path: ./xs-security.json
       config:
-        xsappname: LearningIceCream-${org}-${space}
+        xsappname: learningicecream-${org}-${space}
         tenant-mode: dedicated
+    

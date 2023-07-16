@@ -1,0 +1,50 @@
+{
+  "name": "LearningIceCream",
+  "version": "1.0.0",
+  "description": "A simple CAP project.",
+  "repository": "<Add your repository here>",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@sap-cloud-sdk/connectivity": "^3.2.0",
+    "@sap-cloud-sdk/http-client": "^3.2.0",
+    "@sap/cds": "^6",
+    "@sap/cds-odata-v2-adapter-proxy": "^1.9.21",
+    "@sap/xssec": "^3",
+    "express": "^4",
+    "hdb": "^0.19.0",
+    "passport": "^0",
+    "sap-cf-axios": "^0.4.10",
+    "xml2js": "^0.6.0"
+  },
+  "devDependencies": {
+    "@sap/ux-specification": "^1.108.8",
+    "sqlite3": "^5.1.6"
+  },
+  "engines": {
+    "node": "^18"
+  },
+  "scripts": {
+    "start": "cds-serve",
+    "watch-createpr": "cds watch --open createpr/webapp/index.html?sap-ui-xx-viewCache=false"
+  },
+  "cds": {
+    "requires": {
+      "db": {
+        "kind": "sqlite",
+        "credentials": {
+          "database": "db/com.kyyte.icecream.db"
+        }
+      },
+      "[production]": {
+        "db": {
+          "kind": "hana-cloud"
+        },
+        "auth": "xsuaa"
+      }
+    }
+  },
+  "sapux": [
+    "app/createpr"
+  ]
+}

@@ -1,5 +1,5 @@
 {
-  "name": "LearningIceCream",
+  "name": "learningicecream",
   "version": "1.0.0",
   "description": "A simple CAP project.",
   "repository": "<Add your repository here>",
@@ -8,9 +8,11 @@
   "dependencies": {
     "@sap-cloud-sdk/connectivity": "^3.2.0",
     "@sap-cloud-sdk/http-client": "^3.2.0",
-    "@sap/cds": "^6",
+    "@sap/cds": "~6.6.1",
     "@sap/cds-odata-v2-adapter-proxy": "^1.9.21",
     "@sap/xssec": "^3",
+    "cds-dbm": "^0.1.4",
+    "cds-pg": "~0.1.35",
     "express": "^4",
     "hdb": "^0.19.0",
     "passport": "^0",
@@ -18,7 +20,9 @@
     "xml2js": "^0.6.0"
   },
   "devDependencies": {
+    "@sap/cds-dk": "^7",
     "@sap/ux-specification": "^1.108.8",
+    "mbt": "^1.2.23",
     "sqlite3": "^5.1.6"
   },
   "engines": {
@@ -26,21 +30,59 @@
   },
   "scripts": {
     "start": "cds-serve",
+    "start:docker": "docker-compose up",
+    "build:cf": "mbt build",
+    "local:db:build": "npx cds-dbm deploy --create-db",
+    "deploy:cf": "cf deploy mta_archives/prcreate_1.0.0.mtar",
     "watch-createpr": "cds watch --open createpr/webapp/index.html?sap-ui-xx-viewCache=false"
   },
   "cds": {
+    "build": {
+      "tasks": [
+        {
+          "use": "node-cf",
+          "for": "node-cf",
+          "src": "srv"
+        },
+        {
+          "use": "cds-dbm/dist/build/postgres-cf",
+          "for": "postgres-cf",
+          "src": "db",
+          "options": {
+            "deployCmd": "npx cds-dbm deploy --load-via delta --auto-undeploy"
+          }
+        }
+      ]
+    },
     "requires": {
       "db": {
-        "kind": "sqlite",
-        "credentials": {
-          "database": "db/com.kyyte.icecream.db"
-        }
+        "kind": "postgres",
+        "dialect": "plain",
+        "impl": "cds-pg",
+        "model": [
+          "srv",
+          "db"
+        ]
       },
-      "[production]": {
-        "db": {
-          "kind": "hana-cloud"
+      "postgres": {
+        "impl": "cds-pg",
+        "model": [
+          "srv",
+          "db"
+        ]
+      }
+    },
+    "migrations": {
+      "db": {
+        "schema": {
+          "default": "public",
+          "clone": "_cdsdbm_clone",
+          "reference": "_cdsdbm_ref"
         },
-        "auth": "xsuaa"
+        "deploy": {
+          "tmpFile": "tmp/_autodeploy.json",
+          "undeployFile": "db/undeploy.json"
+        }
       }
     }
   },

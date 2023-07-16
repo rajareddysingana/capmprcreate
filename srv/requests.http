@@ -1,4 +1,10 @@
 #
+## Get data from Process Flows
+#
+GET http://localhost:4004/service/icecream/ProcessFlows
+###
+
+#
 ## Create PR to Ariba
 #
 POST http://localhost:4004/service/icecream/createPurchaseRequisition
@@ -24,3 +30,4 @@ content-type:application/json
         ]  
     }
 }
+####
