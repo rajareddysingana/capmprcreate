@@ -1,0 +1,236 @@
+<mvc:View
+    controllerName="com.kyyte.createpr.controller.ProcessFlow"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:ce="sap.ui.codeeditor"
+    xmlns:sap.ui.fl="sap.ui.fl"
+    xmlns:sap.ui.dt="sap.ui.dt"
+    xmlns:vm="sap.ui.fl.variants"
+    xmlns:l="sap.ui.layout"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:core="sap.ui.core"
+>
+    <Page
+        title="{i18n>processFlows}"
+        floatingFooter="true"
+        class="sapUiResponsivePadding--header sapUiResponsivePadding--content sapUiResponsivePadding--footer sapUiResponsivePadding--floatingFooter"
+    >
+        <Table
+            id="idProcessFlowTable"
+            items="{path: '/ProcessFlows'}"
+            mode="SingleSelectLeft"
+            selectionChange="onSelect"
+        >
+            <headerToolbar>
+                <Toolbar>
+                    <content>
+                        <Title
+                            id="idTitle"
+                            text="Persons"
+                        />
+                        <ToolbarSeparator />
+                        <vm:VariantManagement for="persoTable" />
+                        <ToolbarSpacer />
+                        <Button
+                            icon="sap-icon://action-settings"
+                            press="openPersoDialog"
+                        />
+                        <Button
+                            id="createButton"
+                            icon="sap-icon://add"
+                            tooltip="Create"
+                            visible="true"
+                            press="onOpenAddDialog"
+                        >
+                            <layoutData>
+                                <OverflowToolbarLayoutData
+                                    priority="NeverOverflow"
+                                />
+                            </layoutData>
+                        </Button>
+                        <Button
+                            id="deleteButton"
+                            icon="sap-icon://delete"
+                            tooltip="Delete"
+                            press="onDelete"
+                        >
+                            <layoutData>
+                                <OverflowToolbarLayoutData
+                                    priority="NeverOverflow"
+                                />
+                            </layoutData>
+                        </Button>
+                    </content>
+                </Toolbar>
+            </headerToolbar>
+            <dependents>
+                <Dialog
+                    id="OpenDialog"
+                    title="Create Process Flow"
+                    contentWidth="550px"
+                    contentHeight="300px"
+                >
+                    <buttons>
+                        <Button
+                            id="confirmCreate"
+                            text="Create"
+                            press=".onCreate"
+                            type="Emphasized"
+                        />
+                        <Button
+                            id="cancelCreate"
+                            text="Cancel"
+                            press="onCancelPress"
+                            type="Transparent"
+                        />
+                    </buttons>
+                    <f:SimpleForm
+                        id="idProcessFlowSimpleForm"
+                        editable="true"
+                        layout="ResponsiveGridLayout"
+                        labelSpanXL="3"
+                        labelSpanL="3"
+                        labelSpanM="3"
+                        labelSpanS="12"
+                        adjustLabelSpan="false"
+                        emptySpanXL="4"
+                        emptySpanL="4"
+                        emptySpanM="4"
+                        emptySpanS="0"
+                        columnsXL="1"
+                        columnsL="1"
+                        columnsM="1"
+                        singleContainerFullSize="false"
+                        class="sapUiSmallMargin"
+                        binding="{CreateProcessFlow>/}"
+                    >
+                        <f:content>
+                            <Label
+                                text="ID"
+                                required="true"
+                            />
+                            <Input
+                                maxLength="4"
+                                value="{path:'CreateProcessFlow>ID'}"
+                                type="Number"
+                            />
+                            <Label text="Title" />
+                            <Input value="{CreateProcessFlow>Title}" />
+                            <Label text="Lane" />
+                            <Input
+                                value="{CreateProcessFlow>Lane}"
+                                type="Number"
+                            />
+                            <Label text="Title Abbreviation" />
+                            <Input
+                                value="{CreateProcessFlow>TitleAbbreviation}"
+                            />
+                            <Label text="State" />
+                            <Input value="{CreateProcessFlow>State}" />
+                            <Label text="State Text" />
+                            <Input value="{CreateProcessFlow>StateText}" />
+                        </f:content>
+                    </f:SimpleForm>
+                </Dialog>
+
+                <Dialog
+                    id="OpenEditDialog"
+                    title="Edit Process Flow"
+                    contentWidth="550px"
+                    contentHeight="300px"
+                >
+                    <buttons>
+                        <Button
+                            text="Save"
+                            press=".onSavePress"
+                            type="Emphasized"
+                        />
+                        <Button
+                            text="Cancel"
+                            press="onCancelPress"
+                            type="Transparent"
+                        />
+                    </buttons>
+                    <f:SimpleForm
+                        id="idProcessFlowEditSimpleForm"
+                        editable="true"
+                        layout="ResponsiveGridLayout"
+                        labelSpanXL="3"
+                        labelSpanL="3"
+                        labelSpanM="3"
+                        labelSpanS="12"
+                        adjustLabelSpan="false"
+                        emptySpanXL="4"
+                        emptySpanL="4"
+                        emptySpanM="4"
+                        emptySpanS="0"
+                        columnsXL="1"
+                        columnsL="1"
+                        columnsM="1"
+                        singleContainerFullSize="false"
+                        class="sapUiSmallMargin"
+                    >
+                        <f:content>
+                            <Label
+                                text="ID"
+                                required="true"
+                            />
+                            <Text text="{path:'V2ProcessFlow>ID'}" />
+                            <Label text="Title" />
+                            <Input value="{V2ProcessFlow>Title}" />
+                            <Label text="Lane" />
+                            <Input
+                                value="{path:'V2ProcessFlow>Lane', mode:'TwoWay'}"
+                                type="Number"
+                            />
+                            <Label text="Title Abbreviation" />
+                            <Input value="{V2ProcessFlow>TitleAbbreviation}" />
+                            <Label text="State" />
+                            <Input
+                                value="{path:'V2ProcessFlow>State', mode:'TwoWay'}"
+                            />
+                            <Label text="State Text" />
+                            <Input
+                                value="{path:'V2ProcessFlow>StateText', mode:'TwoWay'}"
+                            />
+                        </f:content>
+                    </f:SimpleForm>
+                </Dialog>
+            </dependents>
+            <columns>
+                <Column>
+                    <header>
+                        <Text text="Process Flow Name" />
+                    </header>
+                </Column>
+                <Column id="idTitleAbbreviation">
+                    <header>
+                        <Text text="Abbreviation" />
+                    </header>
+                </Column>
+                <Column id="idStatus">
+                    <header>
+                        <Text text="Status" />
+                    </header>
+                </Column>
+            </columns>
+
+            <items>
+                <ColumnListItem
+                    type="Detail"
+                    detailPress="onDetailPress"
+                >
+                    <ObjectIdentifier
+                        text="{ID}"
+                        title="{Title}"
+                    />
+                    <Text text="{TitleAbbreviation}" />
+                    <ObjectStatus
+                        text="{StateText}"
+                        state="{State}"
+                    />
+                </ColumnListItem>
+            </items>
+        </Table>
+    </Page>
+</mvc:View>

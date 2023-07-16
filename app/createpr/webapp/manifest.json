@@ -17,20 +17,20 @@
     },
     "dataSources": {
       "mainService": {
-        "uri": "/v2/service/icecream",
-        "type": "OData",
-        "settings": {
-          "annotations": [],
-          "odataVersion": "2.0"
-        }
-      },
-      "icecreamv4": {
-        "uri": "/service/icecream",
+        "uri": "/service/icecream/",
         "type": "OData",
         "settings": {
           "annotations": [],
           "localUri": "localService/metadata.xml",
           "odataVersion": "4.0"
+        }
+      },
+      "icecreamv2": {
+        "uri": "/v2/service/icecream",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "odataVersion": "2.0"
         }
       }
     }
@@ -70,6 +70,7 @@
       "compact": true,
       "cozy": true
     },
+    "handleValidation": true,
     "models": {
       "i18n": {
         "type": "sap.ui.model.resource.ResourceModel",
@@ -84,7 +85,19 @@
           "synchronizationMode": "None",
           "operationMode": "Server",
           "autoExpandSelect": true,
-          "earlyRequests": true
+          "earlyRequests": true,
+          "groupId": "$auto"
+        }
+      },
+      "V2ProcessFlow": {
+        "dataSource": "icecreamv2",
+        "preload": true,
+        "settings": {
+          "synchronizationMode": "None",
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true,
+          "groupId": "$auto"
         }
       },
       "PurchaseRequisition": {
@@ -111,8 +124,8 @@
       "routes": [
         {
           "pattern": "",
-          "name": "createpr",
-          "target": "createpr"
+          "name": "processflow",
+          "target": "processflow"
         }
       ],
       "targets": {
@@ -125,6 +138,10 @@
         },
         "createpr": {
           "viewName": "CreatePR",
+          "viewLevel": 1
+        },
+        "processflow": {
+          "viewName": "ProcessFlow",
           "viewLevel": 1
         }
       }
