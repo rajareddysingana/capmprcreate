@@ -108,7 +108,47 @@ sap.ui.define(
         sObject.ID = +sObject.ID;
         sObject.Lane = +sObject.Lane;
 
-        let oContext = this.getView()
+        const oProcessFlowPayload = {
+          entities: sObject,
+        };
+
+        /* this.getModel("V2ProcessFlow").callFunction("/insertProcessFlows", {
+          method: "POST",
+          urlParameters: oProcessFlowPayload,
+          success: (oData) => {
+            // Process Flow successfully created
+            oDialog.close();
+            this.getModel().refresh();
+            MessageToast.show("Process Flow successfully Created");
+          },
+          error: (oError) => {
+            // handle rejection of entity creation; if oError.canceled === true then the transient entity has been deleted
+            oDialog.close();
+            MessageBox.error("Request failed: " + JSON.parse(oError));
+            // MessageToast.show("Request failed: " + oError);
+          },
+        });*/
+
+        // ${this.getOwnerComponent().oCORS}
+        const sPRCreateAPI = `${
+          this.getModel().sServiceUrl
+        }/insertProcessFlows`;
+
+        this.handleCUDOperations(sPRCreateAPI, oProcessFlowPayload, "POST")
+          .then((oData) => {
+            // Process Flow successfully created
+            oDialog.close();
+            this.getModel().refresh();
+            MessageToast.show("Process Flow successfully Created");
+          })
+          .catch((oError) => {
+            // handle rejection of entity creation; if oError.canceled === true then the transient entity has been deleted
+            oDialog.close();
+            // MessageBox.error(JSON.parse(oError));
+            MessageToast.show("Request failed: " + oError);
+          });
+
+        /*  let oContext = this.getView()
           .byId("idProcessFlowTable")
           .getBinding("items")
           .create(sObject);
@@ -131,7 +171,9 @@ sap.ui.define(
           .catch((oError) => {
             oDialog.close();
             MessageBox.error(JSON.parse(oError));
-          });
+          });*/
+
+        // oDialog.close();
       },
 
       onCancelPress: function (oEvent) {

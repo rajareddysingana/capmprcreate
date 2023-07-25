@@ -7,6 +7,8 @@ const cds = require("@sap/cds"),
 const registerDestination = require("@sap-cloud-sdk/connectivity");
 const { default: axios } = require("axios");
 
+const { ProcessFlows } = cds.entities("com.kyyte.icecream");
+
 function _getLineItemPayload(aLineItems, oHeader) {
   var sXML = "";
   aLineItems &&
@@ -399,7 +401,37 @@ function generateRandomNumber(minNumber, maxNumber) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+async function doCreateProcessFlow(request) {
+  let entities = request.data.entities;
+  console.log(entities);
+
+  const tx = cds.tx();
+  try {
+    // Approach 1
+    // await tx.run(INSERT.into(ProcessFlows).entries(entities));
+    // await tx.commit();
+
+    // Approach 2
+    // let exists = await tx.run(
+    //   SELECT(1).from(ProcessFlows, entities.ID).forUpdate()
+    // );
+
+    // await tx.create(ProcessFlows, { ID: entities.ID, ...entities });
+    // await tx.commit();
+
+    // Approach 3
+    await INSERT.into(ProcessFlows, {
+      ID: entities.ID,
+      ...entities,
+    });
+    await tx.commit();
+  } catch (error) {
+    await tx.rollback();
+  }
+}
+
 module.exports = {
   doImportReqToAriba,
   doImportReqToAribaAsync,
+  doCreateProcessFlow,
 };

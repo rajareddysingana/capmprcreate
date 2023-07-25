@@ -26,15 +26,15 @@
                     <content>
                         <Title
                             id="idTitle"
-                            text="Persons"
+                            text="{i18n>processFlows}"
                         />
                         <ToolbarSeparator />
-                        <vm:VariantManagement for="persoTable" />
+                        <!-- <vm:VariantManagement for="persoTable" /> -->
                         <ToolbarSpacer />
-                        <Button
+                        <!-- <Button
                             icon="sap-icon://action-settings"
                             press="openPersoDialog"
-                        />
+                        /> -->
                         <Button
                             id="createButton"
                             icon="sap-icon://add"
@@ -203,6 +203,11 @@
                         <Text text="Process Flow Name" />
                     </header>
                 </Column>
+                <Column>
+                    <header>
+                        <Text text="Lane" />
+                    </header>
+                </Column>
                 <Column id="idTitleAbbreviation">
                     <header>
                         <Text text="Abbreviation" />
@@ -224,6 +229,7 @@
                         text="{ID}"
                         title="{Title}"
                     />
+                    <Text text="{Lane}" />
                     <Text text="{TitleAbbreviation}" />
                     <ObjectStatus
                         text="{StateText}"

@@ -33,5 +33,6 @@ service ProcessFlowService {
     }
 
     action createPurchaseRequisition(RequisitionPayload : PurchaseRequisitionHeader) returns Response;
+    action insertProcessFlows(entities:ProcessFlows) returns String;
 
 }
