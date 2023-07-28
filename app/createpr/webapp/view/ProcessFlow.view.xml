@@ -175,23 +175,23 @@
                                 text="ID"
                                 required="true"
                             />
-                            <Text text="{path:'V2ProcessFlow>ID'}" />
+                            <Text text="{path:'ID'}" />
                             <Label text="Title" />
-                            <Input value="{V2ProcessFlow>Title}" />
+                            <Input value="{Title}" />
                             <Label text="Lane" />
                             <Input
-                                value="{path:'V2ProcessFlow>Lane', mode:'TwoWay'}"
+                                value="{path:'Lane'}"
                                 type="Number"
                             />
                             <Label text="Title Abbreviation" />
-                            <Input value="{V2ProcessFlow>TitleAbbreviation}" />
+                            <Input value="{TitleAbbreviation}" />
                             <Label text="State" />
                             <Input
-                                value="{path:'V2ProcessFlow>State', mode:'TwoWay'}"
+                                value="{path:'State'}"
                             />
                             <Label text="State Text" />
                             <Input
-                                value="{path:'V2ProcessFlow>StateText', mode:'TwoWay'}"
+                                value="{path:'StateText'}"
                             />
                         </f:content>
                     </f:SimpleForm>

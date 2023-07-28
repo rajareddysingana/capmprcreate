@@ -17,7 +17,7 @@
     },
     "dataSources": {
       "mainService": {
-        "uri": "/service/icecream/",
+        "uri": "/odata/v4/service/icecream/",
         "type": "OData",
         "settings": {
           "annotations": [],
@@ -26,7 +26,7 @@
         }
       },
       "icecreamv2": {
-        "uri": "/v2/service/icecream",
+        "uri": "/v2/odata/v4/service/icecream/",
         "type": "OData",
         "settings": {
           "annotations": [],
@@ -86,7 +86,12 @@
           "operationMode": "Server",
           "autoExpandSelect": true,
           "earlyRequests": true,
-          "groupId": "$auto"
+          "groupId": "$auto",
+          "groupProperties": {
+            "default": {
+              "submit": "Auto"
+            }
+          }
         }
       },
       "V2ProcessFlow": {
@@ -151,6 +156,18 @@
       "type": "XML",
       "async": true,
       "id": "App"
+    },
+    "sap.platform.abap": {
+      "_version": "1.1.0",
+      "uri": ""
+    },
+    "sap.platform.hcp": {
+      "_version": "1.1.0",
+      "uri": ""
+    },
+    "sap.fiori": {
+      "registrationIds": [],
+      "archeType": "transactional"
     }
   }
 }

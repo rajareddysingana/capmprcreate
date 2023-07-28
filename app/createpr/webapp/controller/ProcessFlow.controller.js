@@ -54,11 +54,12 @@ sap.ui.define(
       onSavePress: function (oEvent) {
         const oView = this.getView(),
           oDialog = oEvent.getSource().getParent(),
-          oContext = oDialog.getBindingContext("V2ProcessFlow"),
+          // oContext = oDialog.getBindingContext("V2ProcessFlow"),
+          oContext = oDialog.getBindingContext(),
           sPath = oContext.getPath(),
           sObject = oContext.getObject();
 
-        sObject.Lane = +sObject.Lane;
+        // sObject.Lane = +sObject.Lane;
 
         function resetBusy() {
           oView.setBusy(false);
@@ -67,13 +68,25 @@ sap.ui.define(
         // lock UI until submitBatch is resolved, to prevent errors caused by updates while submitBatch is pending
         oView.setBusy(true);
 
-        // V4 Update Concept, need to analyse
-        // oView
-        //   .getModel()
-        //   .submitBatch(oView.getModel().getUpdateGroupId())
-        //   .then(resetBusy, resetBusy);
+        // V4 Update Concept
+        oView
+          .getModel()
+          .submitBatch(oView.getModel().getUpdateGroupId())
+          .then(()=>{
+            resetBusy();
+            oDialog.close();
+            this.getModel().refresh();
 
-        this.getModel("V2ProcessFlow").update(sPath, sObject, {
+            MessageToast.show("Process Flow Updated Successfully!");
+          }, ()=>{
+            resetBusy();
+
+            MessageBox.error(JSON.parse(oError)); 
+          });
+
+       // V2 Update Concept
+
+        /*  this.getModel("V2ProcessFlow").update(sPath, sObject, {
           success: (oData, response) => {
             resetBusy();
             oDialog.close();
@@ -86,7 +99,7 @@ sap.ui.define(
 
             MessageBox.error(JSON.parse(oError));
           },
-        });
+        });*/
       },
 
       onDetailPress: function (oEvent) {
@@ -95,8 +108,8 @@ sap.ui.define(
           oV2Context = this.getModel("V2ProcessFlow").getContext(sPath);
 
         this.byId("OpenEditDialog").bindElement({
-          path: oV2Context.getPath(),
-          model: "V2ProcessFlow",
+          path: oContext.getPath(),
+          // model: "V2ProcessFlow",
         });
         this.byId("OpenEditDialog").open();
       },
@@ -132,7 +145,7 @@ sap.ui.define(
         // ${this.getOwnerComponent().oCORS}
         const sPRCreateAPI = `${
           this.getModel().sServiceUrl
-        }/insertProcessFlows`;
+        }insertProcessFlows`;
 
         this.handleCUDOperations(sPRCreateAPI, oProcessFlowPayload, "POST")
           .then((oData) => {

@@ -11,6 +11,11 @@ module.exports = cds.service.impl((srv) => {
     ImportPurchaseRequisitionHandler.doCreateProcessFlow
   );
 
+  srv.on(
+    "addProcessFlows",
+    ImportPurchaseRequisitionHandler.doCreateProcessFlow
+  );
+
   srv.on("UPDATE", "ProcessFlows", async (request) => {
     const updateObject = request.data;
 

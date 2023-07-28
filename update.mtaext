@@ -1,0 +1,7 @@
+_schema-version: '3.1'
+ID: learningicecream.extension
+extends: learningicecream
+
+resources:
+  - name: learningicecream-database
+    type: org.cloudfoundry.existing-service

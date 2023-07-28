@@ -1,6 +1,6 @@
 namespace com.kyyte.icecream;
 
-using {managed} from '@sap/cds/common';
+using {managed, Currency} from '@sap/cds/common';
 
 entity ProcessFlows {
     key ID                : Integer;
@@ -10,4 +10,32 @@ entity ProcessFlows {
         State             : String;
         StateText         : String;
         Focused           : Boolean;
+}
+
+
+type PurchaseRequisitionHeader {
+    CompanyCode :      Integer;
+    DeliverTo   :      String;
+    // NeedBy      :      DateTime;
+    Items       : many PurchaseRequisitionItems;
+}
+
+type PurchaseRequisitionItems {
+    NumberInCollection : Integer;
+    Quantity           : Integer;
+    ShipTo             : Integer;
+    BillingAddress     : Integer;
+    CommodityCode      : Integer;
+    Description        : String;
+    Price              : Integer;
+    Currency           : String(3);
+    UnitOfMeasure      : String(2);
+
+};
+
+
+type Response : {
+    status     : Integer;
+    statusText : String;
+    data       : String;
 }

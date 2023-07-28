@@ -1,93 +1,130 @@
 {
-  "name": "learningicecream",
-  "version": "1.0.0",
-  "description": "A simple CAP project.",
-  "repository": "<Add your repository here>",
-  "license": "UNLICENSED",
-  "private": true,
-  "dependencies": {
-    "@sap-cloud-sdk/connectivity": "^3.2.0",
-    "@sap-cloud-sdk/http-client": "^3.2.0",
-    "@sap/cds": "~6.6.1",
-    "@sap/cds-odata-v2-adapter-proxy": "^1.9.21",
-    "@sap/xssec": "^3",
-    "cds-dbm": "^0.1.4",
-    "cds-pg": "~0.1.35",
-    "express": "^4",
-    "hdb": "^0.19.0",
-    "passport": "^0",
-    "sap-cf-axios": "^0.4.10",
-    "xml2js": "^0.6.0"
-  },
-  "devDependencies": {
-    "@sap/cds-dk": "^7",
-    "@sap/ux-specification": "^1.108.8",
-    "@ui5/cli": "^3.3.2",
-    "mbt": "^1.2.23",
-    "sqlite3": "^5.1.6"
-  },
-  "engines": {
-    "node": "^18"
-  },
-  "scripts": {
-    "start": "cds-serve",
-    "start:docker": "docker-compose up",
-    "build:cf": "mbt build",
-    "local:db:build": "npx cds-dbm deploy --create-db",
-    "deploy:cf": "cf deploy mta_archives/prcreate_1.0.0.mtar",
-    "watch-createpr": "cds watch --open createpr/webapp/index.html?sap-ui-xx-viewCache=false"
-  },
-  "cds": {
-    "build": {
-      "tasks": [
-        {
-          "use": "node-cf",
-          "for": "node-cf",
-          "src": "srv"
-        },
-        {
-          "use": "cds-dbm/dist/build/postgres-cf",
-          "for": "postgres-cf",
-          "src": "db",
-          "options": {
-            "deployCmd": "npx cds-dbm deploy --load-via delta --auto-undeploy"
-          }
-        }
-      ]
+    "name": "learningicecream",
+    "version": "1.0.0",
+    "description": "A simple CAP project.",
+    "repository": "<Add your repository here>",
+    "license": "UNLICENSED",
+    "private": true,
+    "dependencies": {
+        "@cap-js/postgres": "^1.0.1",
+        "@sap-cloud-sdk/connectivity": "^3.2.0",
+        "@sap-cloud-sdk/http-client": "^3.2.0",
+        "@sap/audit-logging": "^5",
+        "@sap/cds": "^7",
+        "@sap/cds-odata-v2-adapter-proxy": "^1.9.21",
+        "@sap/xsenv": "^3",
+        "@sap/xssec": "^3",
+        "applicationinsights": "^2",
+        "cds-dbm": "^0.1.4",
+        "copyfiles": "^2",
+        "express": "^4",
+        "passport": "^0",
+        "pg": "^8",
+        "sap-cf-axios": "^0.4.10",
+        "xml2js": "^0.6.0"
     },
-    "requires": {
-      "db": {
-        "kind": "postgres",
-        "dialect": "plain",
-        "impl": "cds-pg",
-        "model": [
-          "srv",
-          "db"
-        ]
-      },
-      "postgres": {
-        "impl": "cds-pg",
-        "model": [
-          "srv",
-          "db"
-        ]
-      }
+    "devDependencies": {
+        "@sap/cds-dk": "^7.0.2",
+        "@sap/ux-specification": "^1.108.10",
+        "@ui5/cli": "^3.3.2",
+        "cds-launchpad-plugin": "^1",
+        "chai": "^4",
+        "chai-as-promised": "^7",
+        "chai-subset": "^1",
+        "jest": "^29",
+        "mbt": "^1.2.23",
+        "npm-run-all": "^4",
+        "sqlite3": "^5.1.6",
+        "rimraf": "^3.0.2"
     },
-    "migrations": {
-      "db": {
-        "schema": {
-          "default": "public",
-          "clone": "_cdsdbm_clone",
-          "reference": "_cdsdbm_ref"
+    "engines": {
+        "node": "^18"
+    },
+    "scripts": {
+        "start": "cds-serve",
+        "update": "run-p update:**",
+        "update:root": "npm update",
+        "update:app": "cd app && npm update",
+        "test": "jest",
+        "docker:start:pg": "docker-compose -f docker-compose.yml up -d",
+        "deploy:pg": "cds deploy --profile pg",
+        "deploy:pg:model-only": "cds deploy --profile pg --model-only",
+        "deploy:pg:data:delta": "cds deploy --profile pg --model-only",
+        "deploy:pg:data:full": "npx cds-dbm load --via full",
+        "start:sqlite": "cds watch --profile sqlite",
+        "start:issue": "run-s deploy:pg start:cds",
+        "start:cds": "cds run",
+        "docker:stop:pg": "docker-compose -f docker-compose.yml down",
+        "bind:uaa": "cds bind uaa --to learningicecream-auth --kind xsuaa --profile hybrid",
+        "build": "rimraf resources mta_archives && mbt build --mtar archive",
+        "build:db": "./pg-build.sh",
+        "build:cf": "mbt build",
+        "build:ElasticBeanstalk": "run-s build build:zipsrv",
+        "build:zipsrv": "cd gen/srv && zip -r ../srv.zip .",
+        "xsuaa:build": "cds compile srv/ --to xsuaa > xs-security.json",
+        "xsuaa:create": "cf create-service xsuaa application learningicecream-auth -c xs-security.json",
+        "xsuaa:update": "cf update-service learningicecream-auth -c xs-security.json",
+        "xsuaa:create:key": " cf create-service-key learningicecream-auth learningicecream-auth-key",
+        "xsuaa:download:key": "cf service-key  learningicecream-auth learningicecream-auth-key",
+        "deploy:cf": "cf deploy mta_archives/learningicecream_1.0.0.mtar --retries 0",
+        "deploy:cf:bg": "cf bg-deploy mta_archives/learningicecream_1.0.0.mtar -f --no-confirm",
+        "deploy:cf:adminer": "cf deploy mta_archives/learningicecream_1.0.0.mtar -m learningicecream-adminer --retries 0",
+        "deploy:cf:srv": "cf deploy mta_archives/learningicecream_1.0.0.mtar -m learningicecream-srv --retries 0",
+        "deploy:cf:app": "cf deploy mta_archives/learningicecream_1.0.0.mtar -m learningicecream-app --retries 0",
+        "deploy:cf:update": "cf deploy mta_archives/learningicecream_1.0.0.mtar -e update.mtaext --retries 0",
+        "test:db": "node test/test-db.js",
+        "undeploy:cf": "cf undeploy learningicecream --delete-service-keys --delete-services --delete-service-brokers",
+        "copy:db:gen": "copyfiles -u 2 -a ./gen/db/* ./gen/db/**/* gen/db-with-express",
+        "watch-createpr": "cds watch --open createpr/webapp/index.html?sap-ui-xx-viewCache=false",
+        "undeploy": "cf undeploy learningicecream --delete-services --delete-service-keys --delete-service-brokers",
+        "deploy": "cf deploy mta_archives/archive.mtar --retries 1"
+    },
+    "cds": {
+        "features": {
+            "serve_on_root": true
         },
-        "deploy": {
-          "tmpFile": "tmp/_autodeploy.json",
-          "undeployFile": "db/undeploy.json"
+        "build": {
+            "tasks": [
+                {
+                    "for": "node-cf",
+                    "src": "srv",
+                    "options": {
+                        "model": [
+                            "db",
+                            "srv",
+                            "app"
+                        ]
+                    }
+                }
+            ]
+        },
+        "requires": {
+            "db": {
+                "kind": "postgres",
+                "dialect": "postgres",
+                "impl": "@cap-js/postgres"
+            },
+            "[production]": {
+                "auth": {
+                    "kind": "xsuaa"
+                }
+            }
+        },
+        "migrations": {
+            "db": {
+                "schema": {
+                    "default": "public",
+                    "clone": "_cdsdbm_clone",
+                    "reference": "_cdsdbm_ref"
+                },
+                "deploy": {
+                    "tmpFile": "tmp/_autodeploy.json",
+                    "undeployFile": "db/undeploy.json"
+                }
+            }
         }
-      }
-    }
-  },
-  "sapux": [
-    "app/createpr"
-  ]
+    },
+    "sapux": [
+        "app/createpr"
+    ]
 }

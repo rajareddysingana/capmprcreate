@@ -31,9 +31,8 @@ modules:
       memory: 256MB
       tasks:
         - name: deploy-to-postgresql
-          # command: chmod 755 pg-build.sh && ./pg-build.sh
-          # command: chmod 755 deploy.sh && ./deploy.sh
-          command: npm start
+          command: chmod 755 pg-build.sh && ./pg-build.sh
+          # command: npm start
           disk-quota: 1GB
           memory: 256MB
     build-parameters:
@@ -86,7 +85,6 @@ modules:
     path: app
     build-parameters:
       ignore: ["node_modules/"]
-
     parameters:
       memory: 256M
       disk-quota: 1024M
@@ -118,7 +116,7 @@ resources:
     parameters:
       path: ./pg-options.json
       service: postgresql-db
-      service-plan: trial
+      service-plan: standard
       skip-service-updates:
         parameters: true
       service-tags:
